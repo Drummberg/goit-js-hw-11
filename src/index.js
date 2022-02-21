@@ -1,13 +1,16 @@
 import './css/styles.css'
 import { fetchImages } from './js/fetch-images'
 import { renderGallery } from './js/galleryRender'
+import { onScroll, onToTopBtn } from './js/scrollAndBtnTop'
 import Notiflix from 'notiflix'
 import SimpleLightbox from "simplelightbox"
 import 'simplelightbox/dist/simple-lightbox.min.css'
+export{ onLoadMoreBtn }
 
 const searchForm = document.querySelector('#search-form')
 const gallery = document.querySelector('.gallery')
 const loadMoreBtn = document.querySelector('.btn-load-more')
+const loading = document.querySelector('.loading');
 
 let query = '';
 let page = 1;
@@ -16,6 +19,9 @@ const perPage = 40;
 
 searchForm.addEventListener('submit', onSearchForm);
 loadMoreBtn.addEventListener('click', onLoadMoreBtn);
+
+onScroll()
+onToTopBtn()
 
 function onSearchForm(e) {
     e.preventDefault();
@@ -38,8 +44,8 @@ function onSearchForm(e) {
                 simpleLightBox = new SimpleLightbox('.gallery a').refresh()
                 alertImagesFound(data)
                  if (data.totalHits > perPage) {
-                    loadMoreBtn.classList.remove('is-hidden')
-                    }
+                     loadMoreBtn.classList.remove('is-hidden')
+                                         }
                 }
           })
     .catch(error => console.log(error))
@@ -53,13 +59,16 @@ function onSearchForm(e) {
             .then(({ data }) => {
             renderGallery(data.hits)
             simpleLightBox = new SimpleLightbox('.gallery a').refresh()
-
+        loading.classList.remove('show');
         const totalPages = Math.ceil(data.totalHits / perPage)
-            if (page > totalPages) {
+                if (page > totalPages) {
+                
                 loadMoreBtn.classList.add('is-hidden')
+            
+
                 alertEndOfSearch()
                 }
-    })
+            })
     .catch(error => console.log(error))
 }
         
